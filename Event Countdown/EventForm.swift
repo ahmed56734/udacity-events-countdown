@@ -32,28 +32,26 @@ struct EventForm: View {
     }
     
     var body: some View {
-        NavigationStack {
-            Form {
-                TextField("Title", text: $formData.title)
+        Form {
+            TextField("Title", text: $formData.title)
                 
-                DatePicker("Date", selection: $formData.date)
+            DatePicker("Date", selection: $formData.date)
                 
-                ColorPicker("Text Color", selection: $formData.color)
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        callback(formData.toEvent())
-                        dismiss()
-                    } label: {
-                        Image(systemName: "checkmark")
-                    }
-                    .disabled(!formData.isValid)
-                }
-            }
-            .navigationTitle(mode == .add ? "Add Event" : "Edit \(oldTitle!)")
-            .navigationBarTitleDisplayMode(.inline)
+            ColorPicker("Text Color", selection: $formData.color)
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    callback(formData.toEvent())
+                    dismiss()
+                } label: {
+                    Image(systemName: "checkmark")
+                }
+                .disabled(!formData.isValid)
+            }
+        }
+        .navigationTitle(mode == .add ? "Add Event" : "Edit \(oldTitle!)")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

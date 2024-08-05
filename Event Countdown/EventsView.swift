@@ -18,16 +18,12 @@ struct EventsView: View {
                     ContentUnavailableView("No Events Created", systemImage: "calendar")
                 } else {
                     List(events, id: \.id) { event in
-                        NavigationLink {
-                            EventForm(toEdit: event, onSave: {
-                                event in updateEvent(event)
-                            })
-                        } label: {
+                        NavigationLink(value: Destinations.editEvent(event)) {
                             EventRow(event: event)
                                 .swipeActions {
                                     Button {
                                         deleteEvent(event)
-                                    } label:{
+                                    } label: {
                                         Label("", systemImage: "trash")
                                     }
                                     .tint(.red)
@@ -45,13 +41,26 @@ struct EventsView: View {
                     }
                 }
             }
+            .navigationDestination(for: Destinations.self) {
+                destination in
+                switch destination {
+                case .addEvent:
+                    EventForm {
+                        newEvent in addEvent(newEvent)
+                    }
+//                    VStack{
+//                        Text("add event")
+//                    }
+
+                case .editEvent(let event):
+                    EventForm(toEdit: event) {
+                        editedEvent in updateEvent(editedEvent)
+                    }
+                }
+            }
             .navigationTitle("Events")
             .toolbar {
-                NavigationLink {
-                    EventForm { event in
-                        addEvent(event)
-                    }
-                } label: {
+                NavigationLink(value: Destinations.addEvent) {
                     Image(systemName: "plus")
                 }
             }
@@ -74,10 +83,15 @@ struct EventsView: View {
     }
 
     func triggerStateUpdate() {
-        for idx in events.indices{
-            events[idx].formattedDate =  Event.formatter.localizedString(for: events[idx].date, relativeTo: Date())
+        for idx in events.indices {
+            events[idx].formattedDate = Event.formatter.localizedString(for: events[idx].date, relativeTo: Date())
         }
     }
+}
+
+enum Destinations: Hashable {
+    case addEvent
+    case editEvent(Event)
 }
 
 #Preview {
